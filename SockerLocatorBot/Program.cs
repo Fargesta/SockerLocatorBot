@@ -1,0 +1,26 @@
+using Microsoft.Extensions.Options;
+using SockerLocatorBot;
+using Telegram.Bot;
+
+var builder = Host.CreateApplicationBuilder(args);
+
+builder.Services.Configure<AppSettings>(builder.Configuration);
+
+builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
+    .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
+    {
+        var options = sp.GetRequiredService<IOptions<AppSettings>>().Value;
+        var botToken = options.BotConfiguration.BotToken;
+        if(string.IsNullOrWhiteSpace(botToken))
+        {
+            throw new ArgumentException("Bot token is not configured.");
+        }
+
+        return new TelegramBotClient(botToken, httpClient);
+    });
+
+builder.Services.AddHostedService<Worker>();
+
+
+var host = builder.Build();
+host.Run();
