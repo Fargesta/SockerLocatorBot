@@ -15,8 +15,9 @@ builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
         {
             throw new ArgumentException("Bot token is not configured.");
         }
+        TelegramBotClientOptions opts = new(botToken);
 
-        return new TelegramBotClient(botToken, httpClient);
+        return new TelegramBotClient(opts, httpClient);
     });
 
 builder.Services.AddHostedService<Worker>();
