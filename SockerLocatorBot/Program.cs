@@ -22,7 +22,7 @@ builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
         return new TelegramBotClient(opts, httpClient);
     });
 
-builder.Services.AddScoped<UpdateDispatcher>();
+builder.Services.AddScoped<UpdateHandler>();
 builder.Services.AddScoped<ReceiverService>();
 builder.Services.AddHostedService<PollingService>();
 

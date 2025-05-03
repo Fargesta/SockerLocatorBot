@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class UpdateDispatcher(ITelegramBotClient bot, ILogger<UpdateDispatcher> logger) : IUpdateHandler
+    public class UpdateHandler(ITelegramBotClient bot, ILogger<UpdateHandler> logger) : IUpdateHandler
     {
         public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
         {
