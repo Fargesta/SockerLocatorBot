@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot.Polling;
 using Telegram.Bot;
 using SockerLocatorBot.Interfaces;
+using Telegram.Bot.Types.Enums;
 
 namespace SockerLocatorBot.Abstract
 {
@@ -13,7 +14,16 @@ namespace SockerLocatorBot.Abstract
         public async Task ReceiveAsync(CancellationToken stoppingToken)
         {
             // ToDo: we can inject ReceiverOptions through IOptions container
-            var receiverOptions = new ReceiverOptions() { DropPendingUpdates = true, AllowedUpdates = [] };
+            var receiverOptions = new ReceiverOptions() {
+                DropPendingUpdates = true,
+                AllowedUpdates =
+                [
+                    UpdateType.Message,
+                    UpdateType.CallbackQuery,
+                    UpdateType.InlineQuery,
+                    UpdateType.ChosenInlineResult,
+                ]
+            };
 
             var me = await botClient.GetMe(stoppingToken);
             logger.LogInformation("Start receiving updates for {BotName}", me.Username ?? "My Awesome Bot");

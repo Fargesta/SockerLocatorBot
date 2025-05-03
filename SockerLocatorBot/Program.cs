@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using SockerLocatorBot;
+using SockerLocatorBot.Handlers;
 using SockerLocatorBot.Services;
 using Telegram.Bot;
 
@@ -21,8 +22,9 @@ builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
         return new TelegramBotClient(opts, httpClient);
     });
 
+builder.Services.AddScoped<UpdateDispatcher>();
+builder.Services.AddScoped<PollingService>();
 builder.Services.AddHostedService<PollingService>();
-
 
 var host = builder.Build();
 host.Run();
