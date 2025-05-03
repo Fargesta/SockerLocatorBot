@@ -21,7 +21,7 @@ namespace SockerLocatorBot.Abstract
                     UpdateType.Message,
                     UpdateType.CallbackQuery,
                     UpdateType.InlineQuery,
-                    UpdateType.ChosenInlineResult,
+                    UpdateType.ChosenInlineResult
                 ]
             };
 
