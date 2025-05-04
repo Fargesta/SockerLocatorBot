@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using SockerLocatorBot;
 using SockerLocatorBot.Handlers;
+using SockerLocatorBot.Interfaces;
 using SockerLocatorBot.Services;
 using Telegram.Bot;
 
@@ -25,6 +27,12 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<UpdateHandler>();
 builder.Services.AddScoped<ReceiverService>();
+builder.Services.AddScoped<IStateService, StateService>();
+
+builder.Services.TryAdd(ServiceDescriptor.Scoped<IBotHandler, SharedLocationHandler>());
+
+//builder.Services.AddScoped<IBotHandler, SharedLocationHandler>();
+
 builder.Services.AddHostedService<PollingService>();
 
 var host = builder.Build();

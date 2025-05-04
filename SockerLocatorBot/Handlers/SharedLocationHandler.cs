@@ -1,19 +1,26 @@
-﻿using Telegram.Bot;
-using Telegram.Bot.Polling;
+﻿using SockerLocatorBot.Interfaces;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    internal class SharedLocationHandler : IUpdateHandler
+    public class SharedLocationHandler(ILogger<SharedLocationHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
-        public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        public bool CanHandle(Update update)
+            => update.Message?.Location != null && stateService.GetState(update.Message.Chat.Id) == UserState.None;
 
-        public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (update.Message?.Location == null)
+            {
+                throw new ArgumentNullException(nameof(update.Message.Location), "Location is null");
+            }
+            var lat = update.Message.Location.Latitude;
+            var lon = update.Message.Location.Longitude;
+
+            logger.LogInformation("Handling location");
+            await botClient.SendMessage(update.Message.Chat.Id, $"Got Location {lat}, {lon}");
+            stateService.SetState(update.Message.Chat.Id, UserState.WaitingForImage);
         }
     }
 }

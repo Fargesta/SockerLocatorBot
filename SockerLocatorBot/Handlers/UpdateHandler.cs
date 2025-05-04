@@ -1,11 +1,12 @@
-﻿using Telegram.Bot;
+﻿using SockerLocatorBot.Interfaces;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class UpdateHandler(ITelegramBotClient bot, ILogger<UpdateHandler> logger) : IUpdateHandler
+    public class UpdateHandler(ITelegramBotClient bot, ILogger<UpdateHandler> logger, IEnumerable<IBotHandler> botHandlers) : IUpdateHandler
     {
         public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
         {
@@ -15,9 +16,15 @@ namespace SockerLocatorBot.Handlers
                 await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         }
 
-        public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            foreach (var handler in botHandlers)
+            {
+                if (handler.CanHandle(update))
+                {
+                    await handler.HandleUpdate(update, cancellationToken);
+                }
+            }
         }
     }
 }
