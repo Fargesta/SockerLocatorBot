@@ -29,9 +29,8 @@ builder.Services.AddScoped<UpdateHandler>();
 builder.Services.AddScoped<ReceiverService>();
 builder.Services.AddScoped<IStateService, StateService>();
 
-builder.Services.TryAdd(ServiceDescriptor.Scoped<IBotHandler, SharedLocationHandler>());
-
-//builder.Services.AddScoped<IBotHandler, SharedLocationHandler>();
+builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SharedLocationHandler>());
+builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, NewOrFindCallbackHandler>());
 
 builder.Services.AddHostedService<PollingService>();
 

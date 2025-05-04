@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class UpdateHandler(ITelegramBotClient bot, ILogger<UpdateHandler> logger, IEnumerable<IBotHandler> botHandlers) : IUpdateHandler
+    public class UpdateHandler(ITelegramBotClient botClient, ILogger<UpdateHandler> logger, IEnumerable<IBotHandler> botHandlers) : IUpdateHandler
     {
         public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
         {
@@ -23,8 +23,21 @@ namespace SockerLocatorBot.Handlers
                 if (handler.CanHandle(update))
                 {
                     await handler.HandleUpdate(update, cancellationToken);
+                    return;
                 }
             }
+
+            var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+
+            if (chatId == null)
+            {
+                logger.LogWarning("Update with Chat Id is null");
+            }
+            else
+            {
+                await botClient.SendMessage(chatId, "Please type /help command to see how bot operates.");
+            }
+            return;
         }
     }
 }
