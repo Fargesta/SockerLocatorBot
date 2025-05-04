@@ -21,6 +21,7 @@ builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
 
         return new TelegramBotClient(opts, httpClient);
     });
+builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<UpdateHandler>();
 builder.Services.AddScoped<ReceiverService>();
