@@ -1,6 +1,7 @@
 ﻿using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
@@ -18,8 +19,15 @@ namespace SockerLocatorBot.Handlers
             var lat = update.Message.Location.Latitude;
             var lon = update.Message.Location.Longitude;
 
-            logger.LogInformation("Handling location");
-            await botClient.SendMessage(update.Message.Chat.Id, $"Got Location {lat}, {lon}");
+            logger.LogInformation($"Handling location. Chat Id {update.Message.Chat.Id}");
+
+            var inlineMarkup = new InlineKeyboardMarkup(new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Add New", "add_new"),
+                InlineKeyboardButton.WithCallbackData("Find", "find_near")
+            });
+
+            await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup);
             stateService.SetState(update.Message.Chat.Id, UserState.WaitingForImage);
         }
     }

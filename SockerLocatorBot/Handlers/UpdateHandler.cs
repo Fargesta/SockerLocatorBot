@@ -23,8 +23,21 @@ namespace SockerLocatorBot.Handlers
                 if (handler.CanHandle(update))
                 {
                     await handler.HandleUpdate(update, cancellationToken);
+                    return;
                 }
             }
+
+            var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+
+            if (chatId == null)
+            {
+                logger.LogWarning("Update with Chat Id is null");
+            }
+            else
+            {
+                await bot.SendMessage(chatId, "Please type /help command to see how bot operates.");
+            }
+            return;
         }
     }
 }

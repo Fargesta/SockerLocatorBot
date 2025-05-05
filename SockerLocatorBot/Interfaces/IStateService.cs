@@ -1,6 +1,13 @@
 ﻿namespace SockerLocatorBot.Interfaces
 {
-    public enum UserState { None, WaitingForImage }
+    public enum UserState
+    {
+        None,
+        LocationShared,
+        WaitingForImage,
+        FindSocket,
+        WaitingForType
+    }
 
     public interface IStateService
     {
