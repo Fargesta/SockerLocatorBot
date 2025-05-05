@@ -1,6 +1,7 @@
 ﻿using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
@@ -28,6 +29,16 @@ namespace SockerLocatorBot.Handlers
             {
                 throw new ArgumentNullException(nameof(file), "File is null");
             }
+
+            var inlineMarkup = new InlineKeyboardMarkup()
+                .AddNewRow()
+                    .AddButton(InlineKeyboardButton.WithCallbackData("220V 2pin", "2PIN"))
+                    .AddButton(InlineKeyboardButton.WithCallbackData("380V 4pin", "4PIN"))
+                .AddNewRow()
+                    .AddButton(InlineKeyboardButton.WithCallbackData("380V 4PIN", "5PIN"))
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Unknown", "UNKN"));
+            await botClient.SendMessage(update.Message.Chat, "Please select the socket type", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
+            stateService.SetState(update.Message.Chat.Id, UserState.WaitingForType);
 
             return;
         }
