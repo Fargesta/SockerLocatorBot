@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SockerLocatorBot", "SockerLocatorBot\SockerLocatorBot.csproj", "{8CFC9810-3637-43D5-A7C1-972974192ECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveManager", "DriveManager\DriveManager.csproj", "{57E5ECD8-B415-4A9D-8A6B-A9A2C58F475E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{8CFC9810-3637-43D5-A7C1-972974192ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CFC9810-3637-43D5-A7C1-972974192ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CFC9810-3637-43D5-A7C1-972974192ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57E5ECD8-B415-4A9D-8A6B-A9A2C58F475E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E5ECD8-B415-4A9D-8A6B-A9A2C58F475E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E5ECD8-B415-4A9D-8A6B-A9A2C58F475E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E5ECD8-B415-4A9D-8A6B-A9A2C58F475E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
