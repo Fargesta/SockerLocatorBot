@@ -2,10 +2,10 @@
 {
     public interface IGoogleDriveService
     {
-        public sealed record UploadItem(Stream Content, string Name, string MimeType, string? ParentFolderId = null);
+        Task<IList<string>> UploadImagesAsync(IEnumerable<Stream> imageStreams, CancellationToken cancellationToken = default);
 
-        ValueTask<IReadOnlyList<string>> UploadAsync(IEnumerable<UploadItem> items, CancellationToken cancellationToken = default);
-        ValueTask DownloadAsync(IEnumerable<string> fileIds, string targetFolder, CancellationToken cancellationToken = default);
-        ValueTask DeleteAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default);
+        Task<IDictionary<string, byte[]>> GetImagesAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default);
+
+        Task DeleteFilesAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default);
     }
 }

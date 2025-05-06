@@ -4,17 +4,19 @@ using static DriveManager.Interfaces.IGoogleDriveService;
 
 namespace DriveManager.Services
 {
-    internal sealed class GoogleDriveService(DriveService driveService, GoogleDriveOptions driveOptions) : IGoogleDriveService
+    internal sealed class GoogleDriveService(DriveService driveService) : IGoogleDriveService
     {
-        public ValueTask<IReadOnlyList<string>> UploadAsync(IEnumerable<UploadItem> items, CancellationToken cancellationToken = default)
+        public Task DeleteFilesAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
-        public ValueTask DownloadAsync(IEnumerable<string> fileIds, string targetFolder, CancellationToken cancellationToken = default)
+
+        public Task<IDictionary<string, byte[]>> GetImagesAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
-        public ValueTask DeleteAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default)
+
+        public Task<IList<string>> UploadImagesAsync(IEnumerable<Stream> imageStreams, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

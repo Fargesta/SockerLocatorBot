@@ -10,18 +10,20 @@ namespace DriveManager.Extensions
 {
     public static class GoogleDriveServiceCollectionExtension
     {
-        public static IServiceCollection AddGoogleDriveService(this IServiceCollection services, Action<GoogleDriveOptions> configure)
+        public static IServiceCollection AddGoogleDrive(this IServiceCollection services, Action<GoogleDriveOptions> configure)
         {
             if (configure == null)
                 throw new ArgumentNullException(nameof(configure));
+
+            services.Configure(configure);
 
             services.AddSingleton(sp =>
             {
                 var opts = sp.GetRequiredService<IOptions<GoogleDriveOptions>>().Value;
 
-                GoogleCredential credential = File.Exists(opts.ServiceAccountJson)
-                    ? GoogleCredential.FromFile(opts.ServiceAccountJson)
-                    : throw new FileNotFoundException("Credential file not found", opts.ServiceAccountJson);
+                GoogleCredential credential = File.Exists(opts.CredentialsPath)
+                    ? GoogleCredential.FromFile(opts.CredentialsPath)
+                    : throw new FileNotFoundException("Credentials file not found.", opts.CredentialsPath);
 
                 credential = credential.CreateScoped(DriveService.ScopeConstants.Drive);
                 return new DriveService(new BaseClientService.Initializer
@@ -30,7 +32,6 @@ namespace DriveManager.Extensions
                     ApplicationName = opts.ApplicationName,
                 });
             });
-
             services.AddScoped<IGoogleDriveService, GoogleDriveService>();
             return services;
         }
