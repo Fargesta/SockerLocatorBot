@@ -1,8 +1,10 @@
-﻿namespace DriveManager.Interfaces
+﻿using DriveManager.Dtos;
+
+namespace DriveManager.Interfaces
 {
     public interface IGoogleDriveService
     {
-        Task<IList<string>> UploadImagesAsync(IEnumerable<Stream> imageStreams, CancellationToken cancellationToken = default);
+        Task<IList<UploadFileData>> UploadImagesAsync(IEnumerable<Stream> imageStreams, string fileName, int maxParllelUploads, CancellationToken cancellationToken = default);
 
         Task<IDictionary<string, byte[]>> GetImagesAsync(IEnumerable<string> fileIds, CancellationToken cancellationToken = default);
 
