@@ -1,3 +1,4 @@
+using DriveManager.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using SockerLocatorBot;
@@ -23,6 +24,12 @@ builder.Services.AddHttpClient("telegram_bot_client").RemoveAllLoggers()
 
         return new TelegramBotClient(opts, httpClient);
     });
+
+builder.Services.AddGoogleDrive(opts =>
+{
+    builder.Configuration.GetSection($"{nameof(AppSettings.GoogleDrive)}").Bind(opts);
+});
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<UpdateHandler>();
