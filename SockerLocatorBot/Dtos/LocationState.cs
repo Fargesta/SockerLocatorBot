@@ -9,7 +9,8 @@ namespace SockerLocatorBot.Dtos
         LocationShared,
         WaitingForImage,
         FindSocket,
-        WaitingForType
+        WaitingForType,
+        WaitingForDescription
     }
 
     public class LocationState

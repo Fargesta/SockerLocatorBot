@@ -22,11 +22,12 @@ namespace SockerLocatorBot.Handlers
 
             logger.LogInformation($"Handling location. Chat Id {update.Message.Chat.Id}");
 
-            var inlineMarkup = new InlineKeyboardMarkup(new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Add New", "add_new"),
-                InlineKeyboardButton.WithCallbackData("Find", "find_near")
-            });
+            var inlineMarkup = new InlineKeyboardMarkup()
+                .AddNewRow()
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Add New", "ADDNEW"))
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Find", "FINDNEAR"))
+                .AddNewRow()
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL"));
 
             await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 

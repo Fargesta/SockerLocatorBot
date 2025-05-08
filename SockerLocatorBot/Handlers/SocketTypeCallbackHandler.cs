@@ -1,11 +1,13 @@
 ﻿using SockerLocatorBot.Dtos;
 using SockerLocatorBot.Interfaces;
+using SockerLocatorBot.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class NewOrFindCallbackHandler(ILogger<NewOrFindCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    internal class SocketTypeCallbackHandler(ILogger<SocketTypeCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         public bool CanHandle(Update update)
         {
@@ -13,7 +15,7 @@ namespace SockerLocatorBot.Handlers
             {
                 var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
 
-                if(state is not null && state.State is LocationStateEnum.LocationShared)
+                if (state is not null && state.State is LocationStateEnum.WaitingForType)
                 {
                     return true;
                 }
@@ -37,25 +39,23 @@ namespace SockerLocatorBot.Handlers
 
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {update.CallbackQuery.Message.Chat.Id}");
 
-            if (update.CallbackQuery.Data == "ADDNEW")
+            var inlineMarkup = new InlineKeyboardMarkup(new[]
             {
-                state.State = LocationStateEnum.LocationShared;
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
-                await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Please send me a photo of the socket", cancellationToken: cancellationToken);
-            }
-            else if (update.CallbackQuery.Data == "FINDNEAR")
-            {
-                state.State = LocationStateEnum.FindSocket;
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
-                await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Searching closest socket(s)", cancellationToken: cancellationToken);
-            }
-            else
-            {
-                stateService.ClearState(update.CallbackQuery.Message.Chat.Id);
-                throw new ArgumentException("Invalid callback query data", nameof(update.CallbackQuery.Data));
-            }
+                InlineKeyboardButton.WithCallbackData("Skip", "SKIP"),
+                InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL")
+            });
 
-            return;
+            await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Searching closest socket(s)", cancellationToken: cancellationToken);
+
+            state.SocketType = update.CallbackQuery.Data switch
+            {
+                "2PIN" => "2PIN",
+                "4PIN" => "4PIN",
+                "5PIN" => "5PIN",
+                _ => "UNKN"
+            };
+
+            state.State = LocationStateEnum.WaitingForDescription;
         }
     }
 }

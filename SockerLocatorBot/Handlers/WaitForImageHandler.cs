@@ -47,7 +47,10 @@ namespace SockerLocatorBot.Handlers
                     .AddButton(InlineKeyboardButton.WithCallbackData("380V 4pin", "4PIN"))
                 .AddNewRow()
                     .AddButton(InlineKeyboardButton.WithCallbackData("380V 4PIN", "5PIN"))
-                    .AddButton(InlineKeyboardButton.WithCallbackData("Unknown", "UNKN"));
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Skip", "UNKN"))
+                .AddNewRow()
+                    .AddButton(InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL"));
+
             await botClient.SendMessage(update.Message.Chat, "Please select the socket type", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
             var state = stateService.GetState(update.Message.Chat.Id);
