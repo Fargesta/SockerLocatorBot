@@ -1,18 +1,12 @@
-﻿namespace SockerLocatorBot.Interfaces
-{
-    public enum UserState
-    {
-        None,
-        LocationShared,
-        WaitingForImage,
-        FindSocket,
-        WaitingForType
-    }
+﻿using SockerLocatorBot.Dtos;
 
+namespace SockerLocatorBot.Interfaces
+{
     public interface IStateService
     {
-        void SetState(long chatId, UserState state);
-        UserState GetState(long chatId);
-        void ClearState(long chatId);
+        public LocationState? GetState(long chatId);
+        public void CreateState(long chatId, LocationState state);
+        public void SetState(long chatId, LocationState state);
+        public void ClearState(long chatId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using SockerLocatorBot.Interfaces;
+﻿using SockerLocatorBot.Dtos;
+using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -8,7 +9,7 @@ namespace SockerLocatorBot.Handlers
     public class SharedLocationHandler(ILogger<SharedLocationHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         public bool CanHandle(Update update)
-            => update.Message?.Location != null && stateService.GetState(update.Message.Chat.Id) == UserState.None;
+            => update.Message?.Location is not null && stateService.GetState(update.Message.Chat.Id) is null;
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
@@ -27,8 +28,17 @@ namespace SockerLocatorBot.Handlers
                 InlineKeyboardButton.WithCallbackData("Find", "find_near")
             });
 
-            await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup);
-            stateService.SetState(update.Message.Chat.Id, UserState.WaitingForImage);
+            await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
+
+            var newState = new LocationState
+            {
+                Location = new NetTopologySuite.Geometries.Point(lon, lat)
+                {
+                    SRID = 4326
+                },
+                State = LocationStateEnum.LocationShared
+            };
+            stateService.SetState(update.Message.Chat.Id, newState);
         }
     }
 }

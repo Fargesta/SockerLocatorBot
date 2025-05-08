@@ -1,4 +1,5 @@
-﻿using SockerLocatorBot.Interfaces;
+﻿using SockerLocatorBot.Dtos;
+using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -16,16 +17,25 @@ namespace SockerLocatorBot.Handlers
                 throw new ArgumentNullException(nameof(update.CallbackQuery), "CallbackQuery or Message is null");
             }
 
+            var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
+
+            if (state == null || state.State is not LocationStateEnum.LocationShared)
+            {
+                throw new ArgumentNullException(nameof(state), "State is null or wrong state");
+            }
+
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {update.CallbackQuery.Message.Chat.Id}");
 
             if (update.CallbackQuery.Data == "add_new")
             {
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, UserState.WaitingForImage);
+                state.State = LocationStateEnum.LocationShared;
+                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
                 await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Please send me a photo of the socket", cancellationToken: cancellationToken);
             }
             else if (update.CallbackQuery.Data == "find_near")
             {
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, UserState.FindSocket);
+                state.State = LocationStateEnum.FindSocket;
+                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
                 await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Searching closest socket(s)", cancellationToken: cancellationToken);
             }
             else
