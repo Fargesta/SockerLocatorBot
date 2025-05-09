@@ -32,6 +32,7 @@ namespace DriveManager.Services
                 };
 
                 var request = driveService.Files.Create(meta, stream, "image/jpeg");
+                request.Fields = "id, name, size";
                 var file = await request.UploadAsync(ct);
                 if (file.Status == Google.Apis.Upload.UploadStatus.Completed)
                 {
