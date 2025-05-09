@@ -3,7 +3,17 @@ using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Dtos
 {
-    internal class AddLocationDto
+    public enum LocationStateEnum
+    {
+        None,
+        LocationShared,
+        WaitingForImage,
+        FindSocket,
+        WaitingForType,
+        WaitingForDescription
+    }
+
+    public class LocationState
     {
         public string ChatId { get; set; } = default!;
         public Point Location { get; set; } = default!;
@@ -11,5 +21,6 @@ namespace SockerLocatorBot.Dtos
         public List<TGFile> Photos { get; set; } = new();
         public string? SocketType { get; set; } = default!;
         public string? Description { get; set; } = default!;
+        public LocationStateEnum State { get; set; } = LocationStateEnum.None;
     }
 }
