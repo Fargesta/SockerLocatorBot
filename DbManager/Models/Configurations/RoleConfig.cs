@@ -17,7 +17,8 @@ namespace DbManager.Models.Configurations
 
             builder.HasMany(l => l.Users)
                 .WithOne(r => r.Role)
-                .HasForeignKey(l => l.Id)
+                .HasForeignKey(l => l.RoleId)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
         }

@@ -18,8 +18,6 @@ namespace DbManager.Models.Configurations
             builder.Property(i => i.DriveFileId).IsRequired(true).HasMaxLength(500);
             builder.Property(i => i.FileSize).IsRequired(false);
             builder.Property(i => i.IsSaved).HasDefaultValue(false);
-
-            builder.Ignore(u => u.UpdatedBy);
         }
     }
 }

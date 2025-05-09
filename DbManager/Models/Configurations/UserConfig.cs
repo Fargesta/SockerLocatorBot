@@ -18,26 +18,30 @@ namespace DbManager.Models.Configurations
             builder.Property(l => l.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAdd().IsRequired();
             builder.Property(l => l.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
 
-            builder.HasMany(l => l.Locations)
+            builder.HasMany(l => l.CretedLocations)
                 .WithOne(u => u.CreatedBy)
-                .HasForeignKey(l => l.Id)
+                .HasForeignKey(l => l.CreatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(l => l.Locations)
+            builder.HasMany(l => l.UpdatedLocations)
                 .WithOne(u => u.UpdatedBy)
-                .HasForeignKey(l => l.Id)
+                .HasForeignKey(l => l.UpdatedById)
+                .HasPrincipalKey(x => x.Id)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(i => i.Images)
+            builder.HasMany(i => i.CreatedImages)
                 .WithOne(u => u.CreatedBy)
-                .HasForeignKey(i => i.Id)
+                .HasForeignKey(i => i.CreatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(i => i.Images)
+            builder.HasMany(i => i.UpdatedImages)
                 .WithOne(u => u.UpdatedBy)
-                .HasForeignKey(i => i.Id)
+                .HasForeignKey(i => i.UpdatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
         }

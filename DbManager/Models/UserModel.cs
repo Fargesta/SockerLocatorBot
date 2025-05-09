@@ -11,9 +11,12 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        public long RoleId { get; set; }
         public RoleModel Role { get; set; } = null!;
 
-        public List<LocationModel> Locations { get; set; } = [];
-        public List<ImageModel> Images { get; set; } = [];
+        public List<LocationModel> CretedLocations { get; set; } = [];
+        public List<LocationModel> UpdatedLocations { get; set; } = [];
+        public List<ImageModel> CreatedImages { get; set; } = [];
+        public List<ImageModel> UpdatedImages { get; set; } = [];
     }
 }

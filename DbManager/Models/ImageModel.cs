@@ -13,9 +13,12 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        public long CreatedById { get; set; }
         public UserModel CreatedBy { get; set; } = null!;
+        public long UpdatedById { get; set; }
         public UserModel UpdatedBy { get; set; } = null!;
 
+        public long LocationId { get; set; }
         public LocationModel Location { get; set; } = null!;
     }
 }
