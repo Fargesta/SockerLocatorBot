@@ -17,6 +17,8 @@ namespace DbManager.Models.Configurations
             builder.Property(l => l.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAdd().IsRequired();
             builder.Property(l => l.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
 
+            builder.Ignore(u => u.UpdatedBy);
+
             builder.HasMany(u => u.Images)
                 .WithOne(i => i.Location)
                 .HasForeignKey(i => i.Id)
