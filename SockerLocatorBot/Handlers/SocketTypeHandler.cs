@@ -42,7 +42,7 @@ namespace SockerLocatorBot.Handlers
                 InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL")
             });
 
-            await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
+            await botClient.SendMessage(chatId, "You can add location description or press Skip", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
             locationState.SocketType = update.CallbackQuery.Data switch
             {
