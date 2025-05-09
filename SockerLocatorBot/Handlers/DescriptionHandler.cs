@@ -68,7 +68,6 @@ namespace SockerLocatorBot.Handlers
             });
 
             await botClient.SendMessage(chatId, summary, replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
-            stateService.ClearState(chatId);
         }
     }
 }
