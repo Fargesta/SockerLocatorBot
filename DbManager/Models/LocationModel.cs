@@ -9,11 +9,12 @@ namespace DbManager.Models
         public string SocketType { get; set; } = null!;
         public string Description { get; set; } = null!;
         public bool IsActive { get; set; } = false;
-        public UserModel User { get; set; } = null!;
-        public List<ImageModel> Images { get; set; } = [];
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
         public UserModel CreatedBy { get; set; } = null!;
         public UserModel UpdatedBy { get; set; } = null!;
+
+        public List<ImageModel> Images { get; set; } = [];
     }
 }

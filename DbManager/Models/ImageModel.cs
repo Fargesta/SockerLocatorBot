@@ -10,10 +10,12 @@
         public string? Description { get; set; } = null;
         public bool IsActive { get; set; } = false;
         public bool IsSaved { get; set; } = false;
-        public LocationModel Location { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
         public UserModel CreatedBy { get; set; } = null!;
         public UserModel UpdatedBy { get; set; } = null!;
+
+        public LocationModel Location { get; set; } = null!;
     }
 }
