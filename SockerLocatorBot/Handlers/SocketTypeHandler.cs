@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
-    internal class SocketTypeCallbackHandler(ILogger<SocketTypeCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    internal class SocketTypeHandler(ILogger<SocketTypeHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
@@ -42,7 +42,7 @@ namespace SockerLocatorBot.Handlers
                 InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL")
             });
 
-            await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
+            await botClient.SendMessage(chatId, "You can add location description or press Skip", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
             locationState.SocketType = update.CallbackQuery.Data switch
             {

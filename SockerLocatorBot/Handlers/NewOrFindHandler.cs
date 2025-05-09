@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class NewOrFindCallbackHandler(ILogger<NewOrFindCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    public class NewOrFindHandler(ILogger<NewOrFindHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }

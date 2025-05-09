@@ -1,8 +1,8 @@
 ﻿using SockerLocatorBot.Dtos;
 using SockerLocatorBot.Interfaces;
-using SockerLocatorBot.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
@@ -36,9 +36,39 @@ namespace SockerLocatorBot.Handlers
             return false;
         }
 
-        public Task HandleUpdate(Update update, CancellationToken cancellationToken)
+        public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (locationState is null)
+            {
+                throw new ArgumentNullException(nameof(locationState), "State is null");
+            }
+
+            logger.LogInformation($"Handling description. Chat Id {chatId}");
+
+            if (update.CallbackQuery is not null)
+            {
+                locationState.Description = "No description";
+            }
+            else if (!string.IsNullOrEmpty(update.Message?.Text))
+            {
+                locationState.Description = update.Message.Text;
+            }
+
+            locationState.State = LocationStateEnum.ReadyToSave;
+
+            var summary = $"Location: {locationState.Location}\n" +
+                $"Numer of image: {locationState.Photos.Count().ToString() }\n" +
+                $"Socket Type: {locationState.SocketType}\n" +
+                $"Description: {locationState.Description}";
+
+            var inlineMarkup = new InlineKeyboardMarkup(new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Save", "SAVE"),
+                InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL")
+            });
+
+            await botClient.SendMessage(chatId, summary, replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
+            stateService.ClearState(chatId);
         }
     }
 }
