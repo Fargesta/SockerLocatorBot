@@ -1,3 +1,4 @@
+using DbManager.Extensions;
 using DriveManager.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -29,6 +30,8 @@ builder.Services.AddGoogleDrive(opts =>
 {
     builder.Configuration.GetSection($"{nameof(AppSettings.GoogleDrive)}").Bind(opts);
 });
+
+builder.Services.AddPostgresDb(builder.Configuration);
 
 builder.Services.AddMemoryCache();
 
