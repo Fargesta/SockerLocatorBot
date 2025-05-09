@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DbManager.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DbManager
 {
     public class PgContext : DbContext
     {
+        public DbSet<UserModel> Users { get; set; } = null!;
+
         public PgContext(DbContextOptions<PgContext> options) : base(options)
         {
         }
