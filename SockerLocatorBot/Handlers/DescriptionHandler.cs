@@ -8,21 +8,28 @@ namespace SockerLocatorBot.Handlers
 {
     internal class DescriptionHandler(ILogger<DescriptionHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
+        private LocationState? locationState { get; set; } = null;
+        private long chatId { get; set; }
+
         public bool CanHandle(Update update)
         {
             if (update.CallbackQuery is not null && update.CallbackQuery.Message is not null)
             {
-                var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
+                chatId = update.CallbackQuery.Message.Chat.Id;
+                var state = stateService.GetState(chatId);
                 if (state is not null && state.State is LocationStateEnum.WaitingForDescription)
                 {
+                    locationState = state;
                     return true;
                 }
             }
             else if (update.Message is not null && update.Message.Type is Telegram.Bot.Types.Enums.MessageType.Text)
             {
-                var state = stateService.GetState(update.Message.Chat.Id);
+                chatId = update.Message.Chat.Id;
+                var state = stateService.GetState(chatId);
                 if (state is not null && state.State is LocationStateEnum.WaitingForDescription)
                 {
+                    locationState = state;
                     return true;
                 }
             }

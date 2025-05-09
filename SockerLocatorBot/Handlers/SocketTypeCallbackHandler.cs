@@ -1,6 +1,5 @@
 ﻿using SockerLocatorBot.Dtos;
 using SockerLocatorBot.Interfaces;
-using SockerLocatorBot.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -9,14 +8,19 @@ namespace SockerLocatorBot.Handlers
 {
     internal class SocketTypeCallbackHandler(ILogger<SocketTypeCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
+        private LocationState? locationState { get; set; } = null;
+        private long chatId { get; set; }
+
         public bool CanHandle(Update update)
         {
             if (update.CallbackQuery is not null && update.CallbackQuery?.Message is not null)
             {
-                var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
+                chatId = update.CallbackQuery.Message.Chat.Id;
+                var state = stateService.GetState(chatId);
 
                 if (state is not null && state.State is LocationStateEnum.WaitingForType)
                 {
+                    locationState = state;
                     return true;
                 }
             }
@@ -25,19 +29,12 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            if (update.CallbackQuery == null || update.CallbackQuery.Message == null)
+            if (locationState is null || update.CallbackQuery is null)
             {
-                throw new ArgumentNullException(nameof(update.CallbackQuery), "CallbackQuery or Message is null");
+                throw new ArgumentNullException(nameof(locationState), "State or CallbackQuery is null");
             }
 
-            var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
-
-            if (state == null || state.State is not LocationStateEnum.LocationShared)
-            {
-                throw new ArgumentNullException(nameof(state), "State is null or wrong state");
-            }
-
-            logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {update.CallbackQuery.Message.Chat.Id}");
+            logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
 
             var inlineMarkup = new InlineKeyboardMarkup(new[]
             {
@@ -45,9 +42,9 @@ namespace SockerLocatorBot.Handlers
                 InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL")
             });
 
-            await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Searching closest socket(s)", cancellationToken: cancellationToken);
+            await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
 
-            state.SocketType = update.CallbackQuery.Data switch
+            locationState.SocketType = update.CallbackQuery.Data switch
             {
                 "2PIN" => "2PIN",
                 "4PIN" => "4PIN",
@@ -55,7 +52,8 @@ namespace SockerLocatorBot.Handlers
                 _ => "UNKN"
             };
 
-            state.State = LocationStateEnum.WaitingForDescription;
+            locationState.State = LocationStateEnum.WaitingForDescription;
+            stateService.SetState(chatId, locationState);
         }
     }
 }

@@ -8,15 +8,21 @@ namespace SockerLocatorBot.Handlers
 {
     public class ImageHandler(ILogger<ImageHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
+        private LocationState? locationState { get; set; } = null;
+        private long chatId { get; set; }
+
         public bool CanHandle(Update update)
         {
             if (update.Message is not null && 
-                update.Message.Type is Telegram.Bot.Types.Enums.MessageType.Photo && 
+                update.Message.Type is Telegram.Bot.Types.Enums.MessageType.Photo &&
+                update.Message.Photo is not null &&
                 update.Message.Photo?.Length > 0)
             {
-                var state = stateService.GetState(update.Message.Chat.Id);
+                chatId = update.Message.Chat.Id;
+                var state = stateService.GetState(chatId);
                 if (state is not null && state.State is LocationStateEnum.WaitingForImage)
                 {
+                    locationState = state;
                     return true;
                 }
             }
@@ -25,15 +31,15 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            if (update.Message?.Photo == null || update.Message.Photo.Length == 0)
+            if (locationState is null)
             {
-                throw new ArgumentNullException(nameof(update.Message.Photo), "Photo is null or empty");
+                throw new ArgumentNullException(nameof(update.Message.Photo), "State is null");
             }
 
-            logger.LogInformation($"Handling photo(s). Chat Id {update.Message.Chat.Id}");
+            logger.LogInformation($"Handling photo(s). Chat Id {chatId}");
 
-            var images = update.Message.Photo;
-            var fileId = images.Last().FileId;
+            var images = update.Message!.Photo;
+            var fileId = images!.Last().FileId;
             var file = await botClient.GetFile(fileId, cancellationToken: cancellationToken);
 
             if (file == null)
@@ -53,18 +59,9 @@ namespace SockerLocatorBot.Handlers
 
             await botClient.SendMessage(update.Message.Chat, "Please select the socket type", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
-            var state = stateService.GetState(update.Message.Chat.Id);
-
-            if(state is null)
-            {
-                throw new ArgumentNullException(nameof(state), "State is null");
-            }
-
-            state.Photos.Add(file);
-            state.State = LocationStateEnum.WaitingForType;
-            stateService.SetState(update.Message.Chat.Id, state);
-
-            return;
+            locationState.Photos.Add(file);
+            locationState.State = LocationStateEnum.WaitingForType;
+            stateService.SetState(chatId, locationState);
         }
     }
 }

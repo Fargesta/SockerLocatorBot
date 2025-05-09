@@ -7,7 +7,7 @@ namespace SockerLocatorBot.Handlers
 {
     public class NewOrFindCallbackHandler(ILogger<NewOrFindCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
-        private LocationState locationState { get; set; } = null!;
+        private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
 
         public bool CanHandle(Update update)
@@ -29,7 +29,7 @@ namespace SockerLocatorBot.Handlers
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
 
-            if (locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null)
+            if (locationState is null || locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null)
             {
                 throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null or wrong state");
             }
