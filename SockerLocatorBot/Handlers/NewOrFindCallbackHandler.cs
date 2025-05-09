@@ -7,14 +7,19 @@ namespace SockerLocatorBot.Handlers
 {
     public class NewOrFindCallbackHandler(ILogger<NewOrFindCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
+        private LocationState locationState { get; set; } = null!;
+        private long chatId { get; set; }
+
         public bool CanHandle(Update update)
         {
             if (update.CallbackQuery is not null && update.CallbackQuery?.Message is not null)
             {
-                var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
+                chatId = update.CallbackQuery.Message.Chat.Id;
+                var state = stateService.GetState(chatId);
 
                 if(state is not null && state.State is LocationStateEnum.LocationShared)
                 {
+                    locationState = state;
                     return true;
                 }
             }
@@ -23,39 +28,31 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            if (update.CallbackQuery == null || update.CallbackQuery.Message == null)
+
+            if (locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null)
             {
-                throw new ArgumentNullException(nameof(update.CallbackQuery), "CallbackQuery or Message is null");
+                throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null or wrong state");
             }
 
-            var state = stateService.GetState(update.CallbackQuery.Message.Chat.Id);
-
-            if (state == null || state.State is not LocationStateEnum.LocationShared)
-            {
-                throw new ArgumentNullException(nameof(state), "State is null or wrong state");
-            }
-
-            logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {update.CallbackQuery.Message.Chat.Id}");
+            logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
 
             if (update.CallbackQuery.Data == "ADDNEW")
             {
-                state.State = LocationStateEnum.LocationShared;
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
-                await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Please send me a photo of the socket", cancellationToken: cancellationToken);
+                locationState.State = LocationStateEnum.WaitingForImage;
+                stateService.SetState(chatId, locationState);
+                await botClient.SendMessage(chatId, "Please send me a photo of the socket", cancellationToken: cancellationToken);
             }
             else if (update.CallbackQuery.Data == "FINDNEAR")
             {
-                state.State = LocationStateEnum.FindSocket;
-                stateService.SetState(update.CallbackQuery.Message.Chat.Id, state);
-                await botClient.SendMessage(update.CallbackQuery.Message.Chat.Id, "Searching closest socket(s)", cancellationToken: cancellationToken);
+                locationState.State = LocationStateEnum.FindSocket;
+                stateService.SetState(chatId, locationState);
+                await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
             }
             else
             {
-                stateService.ClearState(update.CallbackQuery.Message.Chat.Id);
+                stateService.ClearState(chatId);
                 throw new ArgumentException("Invalid callback query data", nameof(update.CallbackQuery.Data));
             }
-
-            return;
         }
     }
 }

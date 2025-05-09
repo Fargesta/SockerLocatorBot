@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class WaitForImageHandler(ILogger<WaitForImageHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    public class ImageHandler(ILogger<ImageHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         public bool CanHandle(Update update)
         {
