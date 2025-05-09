@@ -10,12 +10,13 @@ namespace SockerLocatorBot.Dtos
         WaitingForImage,
         FindSocket,
         WaitingForType,
-        WaitingForDescription
+        WaitingForDescription,
+        ReadyToSave
     }
 
     public class LocationState
     {
-        public string ChatId { get; set; } = default!;
+        public long ChatId { get; set; } = default!;
         public Point Location { get; set; } = default!;
         public string? Name { get; set; } = default!;
         public List<TGFile> Photos { get; set; } = new();

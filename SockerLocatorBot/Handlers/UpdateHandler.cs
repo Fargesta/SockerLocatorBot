@@ -18,26 +18,37 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            foreach (var handler in botHandlers)
+            try
             {
-                if (handler.CanHandle(update))
+                foreach (var handler in botHandlers)
                 {
-                    await handler.HandleUpdate(update, cancellationToken);
-                    return;
+                    if (handler.CanHandle(update))
+                    {
+                        await handler.HandleUpdate(update, cancellationToken);
+                        return;
+                    }
+                }
+
+                var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+
+                if (chatId == null)
+                {
+                    logger.LogWarning("Update with Chat Id is null");
+                }
+                else
+                {
+                    await bot.SendMessage(chatId, "Please type /help command to see how bot operates.");
                 }
             }
-
-            var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
-
-            if (chatId == null)
+            catch (Exception ex)
             {
-                logger.LogWarning("Update with Chat Id is null");
+                logger.LogError(ex, "Error handling update: {Update}", update);
+                var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+                if (chatId != null)
+                {
+                    await bot.SendMessage(chatId, "An error occurred while processing your request. Please try again later.");
+                }
             }
-            else
-            {
-                await bot.SendMessage(chatId, "Please type /help command to see how bot operates.");
-            }
-            return;
         }
     }
 }

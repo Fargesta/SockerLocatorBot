@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace SockerLocatorBot.Handlers
 {
-    internal class SocketTypeCallbackHandler(ILogger<SocketTypeCallbackHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    internal class SocketTypeHandler(ILogger<SocketTypeHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
