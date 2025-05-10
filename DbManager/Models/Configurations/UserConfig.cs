@@ -11,33 +11,37 @@ namespace DbManager.Models.Configurations
             builder.HasKey(u => u.Id);
             builder.Property(u => u.FirstName).IsRequired(true).HasMaxLength(500);
             builder.Property(u => u.LastName).IsRequired(false).HasMaxLength(500);
-            builder.Property(u => u.UserName).IsRequired(true).HasMaxLength(500);
+            builder.Property(u => u.UserName).IsRequired(false).HasMaxLength(500);
             builder.Property(u => u.LanguageCode).IsRequired(false).HasMaxLength(10);
             builder.Property(u => u.IsActive).HasDefaultValue(false);
 
             builder.Property(l => l.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAdd().IsRequired();
             builder.Property(l => l.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
 
-            builder.HasMany(l => l.Locations)
+            builder.HasMany(l => l.CretedLocations)
                 .WithOne(u => u.CreatedBy)
-                .HasForeignKey(l => l.Id)
+                .HasForeignKey(l => l.CreatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(l => l.Locations)
+            builder.HasMany(l => l.UpdatedLocations)
                 .WithOne(u => u.UpdatedBy)
-                .HasForeignKey(l => l.Id)
+                .HasForeignKey(l => l.UpdatedById)
+                .HasPrincipalKey(x => x.Id)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(i => i.Images)
+            builder.HasMany(i => i.CreatedImages)
                 .WithOne(u => u.CreatedBy)
-                .HasForeignKey(i => i.Id)
+                .HasForeignKey(i => i.CreatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(i => i.Images)
+            builder.HasMany(i => i.UpdatedImages)
                 .WithOne(u => u.UpdatedBy)
-                .HasForeignKey(i => i.Id)
+                .HasForeignKey(i => i.UpdatedById)
+                .HasPrincipalKey(x => x.Id)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
         }

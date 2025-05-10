@@ -39,7 +39,7 @@ namespace SockerLocatorBot.Handlers
                 },
                 State = LocationStateEnum.LocationShared
             };
-            stateService.SetState(update.Message.Chat.Id, newState);
+            stateService.CreateState(update.Message.Chat.Id, newState);
         }
     }
 }
