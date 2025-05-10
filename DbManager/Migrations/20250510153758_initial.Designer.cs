@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbManager.Migrations
 {
     [DbContext(typeof(PgContext))]
-    [Migration("20250509181721_initial")]
+    [Migration("20250510153758_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -183,6 +183,44 @@ namespace DbManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Code = "ADM",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Administrator",
+                            IsActive = true,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Code = "USR",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Bot user can view and add locations",
+                            IsActive = true,
+                            Name = "User"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Code = "GST",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Default role for new users. Has no access to bot functions. Must be confirmed by moderator to become user.",
+                            IsActive = true,
+                            Name = "Guest"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Code = "MOD",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Can manage user access and review added locations.",
+                            IsActive = true,
+                            Name = "Moderator"
+                        });
                 });
 
             modelBuilder.Entity("DbManager.Models.UserModel", b =>
@@ -225,7 +263,6 @@ namespace DbManager.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 

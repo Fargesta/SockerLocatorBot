@@ -5,6 +5,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace DbManager.Migrations
 {
     /// <inheritdoc />
@@ -41,7 +43,7 @@ namespace DbManager.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     LastName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    UserName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    UserName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     LanguageCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -126,6 +128,17 @@ namespace DbManager.Migrations
                         column: x => x.UpdatedById,
                         principalTable: "users",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "roles",
+                columns: new[] { "Id", "Code", "Description", "IsActive", "Name" },
+                values: new object[,]
+                {
+                    { 1L, "ADM", "Administrator", true, "Admin" },
+                    { 2L, "USR", "Bot user can view and add locations", true, "User" },
+                    { 3L, "GST", "Default role for new users. Has no access to bot functions. Must be confirmed by moderator to become user.", true, "Guest" },
+                    { 4L, "MOD", "Can manage user access and review added locations.", true, "Moderator" }
                 });
 
             migrationBuilder.CreateIndex(

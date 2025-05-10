@@ -4,9 +4,9 @@
     {
         public long Id { get; set; }
         public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string UserName { get; set; } = null!;
-        public string LanguageCode { get; set; } = null!;
+        public string? LastName { get; set; } = null!;
+        public string? UserName { get; set; } = null!;
+        public string? LanguageCode { get; set; } = null!;
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

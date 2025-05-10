@@ -11,7 +11,7 @@ namespace DbManager.Models.Configurations
             builder.HasKey(u => u.Id);
             builder.Property(u => u.FirstName).IsRequired(true).HasMaxLength(500);
             builder.Property(u => u.LastName).IsRequired(false).HasMaxLength(500);
-            builder.Property(u => u.UserName).IsRequired(true).HasMaxLength(500);
+            builder.Property(u => u.UserName).IsRequired(false).HasMaxLength(500);
             builder.Property(u => u.LanguageCode).IsRequired(false).HasMaxLength(10);
             builder.Property(u => u.IsActive).HasDefaultValue(false);
 
