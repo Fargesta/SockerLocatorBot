@@ -38,6 +38,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<UpdateHandler>();
 builder.Services.AddScoped<ReceiverService>();
 builder.Services.AddScoped<IStateService, StateService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SharedLocationHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, NewOrFindHandler>());
@@ -45,6 +46,7 @@ builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, ImageHan
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SocketTypeHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, DescriptionHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SaveLocationHandler>());
+builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, StartHandler>());
 
 builder.Services.AddHostedService<PollingService>();
 
