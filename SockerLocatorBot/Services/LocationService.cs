@@ -8,11 +8,19 @@ namespace SockerLocatorBot.Services
 {
     internal class LocationService(ILogger<LocationService> logger, PgContext pgContext, IStateService stateService, IUserService userService)
     {
-        public async Task<LocationModel?> GetLocationAsync(long locationId) => await pgContext.Locations.FindAsync(locationId);
-        public async Task<LocationModel?> CreateLocationAsync(Update update)
+        public async Task<LocationModel?> GetLocationAsync(long locationId, CancellationToken cancellationToken) =>
+            await pgContext.Locations.FindAsync(locationId, cancellationToken);
+
+        public async Task DeleteLocationAsync(long locationId, CancellationToken cancellationToken)
+        {
+            pgContext.Locations.Remove(new LocationModel { Id = locationId });
+            await pgContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<LocationModel?> CreateLocationAsync(Update update, CancellationToken cancellationToken)
         {
             var chatId = GetInfroFromUpdate.GetChatId(update);
-            var user = await userService.GetUserAsync(update);
+            var user = await userService.GetUserAsync(update, cancellationToken);
 
             if (user is null)
             {
@@ -38,8 +46,8 @@ namespace SockerLocatorBot.Services
 
             try
             {
-                await pgContext.Locations.AddAsync(locationModel);
-                await pgContext.SaveChangesAsync();
+                await pgContext.Locations.AddAsync(locationModel, cancellationToken);
+                await pgContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 logger.LogInformation("Location created: {Location}", locationModel);
                 return locationModel;
             }

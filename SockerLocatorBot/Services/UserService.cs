@@ -8,9 +8,10 @@ namespace SockerLocatorBot.Services
 {
     internal class UserService(ILogger<UserService> logger, PgContext pgContext) : IUserService
     {
-        public async Task<UserModel?> GetUserAsync(Update update) => await pgContext.Users.FindAsync(GetFromId(update));
+        public async Task<UserModel?> GetUserAsync(Update update, CancellationToken cancellationToken) =>
+            await pgContext.Users.FindAsync(GetInfroFromUpdate.GetFromId(update), cancellationToken);
 
-        public async Task<UserModel> CreateUserAsync(Update update)
+        public async Task<UserModel> CreateUserAsync(Update update, CancellationToken cancellationToken)
         {
             try
             {
@@ -23,8 +24,8 @@ namespace SockerLocatorBot.Services
                     LanguageCode = update.Message?.From?.LanguageCode,
                     RoleId = 3, // Guest role for new users
                 };
-                await pgContext.Users.AddAsync(user);
-                await pgContext.SaveChangesAsync();
+                await pgContext.Users.AddAsync(user, cancellationToken);
+                await pgContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 return user;
             }
             catch (Exception ex)

@@ -22,10 +22,10 @@ namespace SockerLocatorBot.Handlers
 
             logger.LogInformation("StartHandler: {Update}", update);
 
-            var user = await userService.GetUserAsync(update);
+            var user = await userService.GetUserAsync(update, cancellationToken);
             if (user is null)
             {
-                user = await userService.CreateUserAsync(update);
+                user = await userService.CreateUserAsync(update, cancellationToken);
                 logger.LogInformation("User created: {User}", user);
 
                 await botClient.SendMessage(
