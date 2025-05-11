@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Services
 {
-    internal class LocationService(ILogger<LocationService> logger, PgContext pgContext, IStateService stateService, IUserService userService)
+    internal class LocationService(ILogger<LocationService> logger, PgContext pgContext, IStateService stateService, IUserService userService) : ILocationService
     {
         public async Task<LocationModel?> GetLocationAsync(long locationId, CancellationToken cancellationToken) =>
             await pgContext.Locations.FindAsync(locationId, cancellationToken);
