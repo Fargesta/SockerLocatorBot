@@ -60,6 +60,7 @@ namespace SockerLocatorBot.Handlers
             await botClient.SendMessage(update.Message.Chat, "Please select the socket type", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
             locationState.Photos.Add(file);
+            locationState.ImageCaption = update.Message.Caption;
             locationState.State = LocationStateEnum.WaitingForType;
             stateService.SetState(chatId, locationState);
         }

@@ -1,5 +1,5 @@
-﻿using DriveManager.Interfaces;
-using SockerLocatorBot.Dtos;
+﻿using SockerLocatorBot.Dtos;
+using SockerLocatorBot.Helpers;
 using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -9,7 +9,8 @@ namespace SockerLocatorBot.Handlers
     internal class SaveLocationHandler(ILogger<SaveLocationHandler> logger,
         IStateService stateService,
         ITelegramBotClient botClient,
-        IGoogleDriveService googleDrive) : IBotHandler
+        IImageService imageService,
+        ILocationService locationService) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
@@ -20,7 +21,7 @@ namespace SockerLocatorBot.Handlers
                 update.CallbackQuery?.Message is not null &&
                 update.CallbackQuery.Data is "SAVE")
             {
-                chatId = update.CallbackQuery.Message.Chat.Id;
+                chatId = GetInfroFromUpdate.GetChatId(update);
                 var state = stateService.GetState(chatId);
 
                 if (state is not null && state.State is LocationStateEnum.ReadyToSave)
@@ -38,45 +39,32 @@ namespace SockerLocatorBot.Handlers
             {
                 throw new ArgumentNullException(nameof(locationState), "State or CallbackQuery is null");
             }
+
             logger.LogInformation($"Handling save location. Chat Id {chatId}");
             await botClient.SendMessage(chatId, "Saving location...", cancellationToken: cancellationToken);
 
-            var filePath = locationState.Photos.Last().FilePath;
-            if (string.IsNullOrEmpty(filePath))
+            var location = await locationService.CreateLocationAsync(update, locationState, cancellationToken);
+            if (location is null)
             {
-                throw new ArgumentNullException(nameof(filePath), "File path is null");
+                await botClient.SendMessage(chatId, "Error saving location. Please try again.", cancellationToken: cancellationToken);
+                logger.LogError($"Location is null ChatId: {chatId}");
             }
-
-            var fileName = $"{locationState.SocketType}_{locationState.Location.X}_{locationState.Location.Y}_{DateTime.UtcNow}"
-                .Replace(' ', '_')
-                .Replace(':', '-')
-                .Replace('/', '-');
-
-            try
+            else
             {
-                using var stream = new MemoryStream();
-                await botClient.DownloadFile(filePath, stream, cancellationToken: cancellationToken);
-                stream.Position = 0;
-
-                var upload = await googleDrive.UploadImagesAsync(new[] { stream }, fileName, 4, cancellationToken);
-
-                if (upload is null || upload.Count == 0)
+                var imagesUploads = await imageService.CreateImageAsync(update, location, locationState, cancellationToken);
+                if (imagesUploads.Count == 0)
                 {
-                    throw new ArgumentNullException(nameof(upload), "Upload is null or empty");
+                    await botClient.SendMessage(chatId, "Error saving images. Please try again.", cancellationToken: cancellationToken);
+                    logger.LogError($"Images are null ChatId: {chatId}");
                 }
+                else
+                {
+                    await botClient.SendMessage(chatId, "Location saved successfully!", cancellationToken: cancellationToken);
+                    logger.LogInformation($"Location saved successfully. Chat Id {chatId}");
+                }
+            }
 
-                await botClient.SendMessage(chatId, "Location saved", cancellationToken: cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error uploading file");
-                await botClient.SendMessage(chatId, "Error uploading file", cancellationToken: cancellationToken);
-                return;
-            }
-            finally
-            {
-                stateService.ClearState(chatId);
-            }
+            stateService.ClearState(chatId);
         }
     }
 }

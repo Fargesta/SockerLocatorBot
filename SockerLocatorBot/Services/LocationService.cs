@@ -1,12 +1,13 @@
 ﻿using DbManager;
 using DbManager.Models;
+using SockerLocatorBot.Dtos;
 using SockerLocatorBot.Helpers;
 using SockerLocatorBot.Interfaces;
 using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Services
 {
-    internal class LocationService(ILogger<LocationService> logger, PgContext pgContext, IStateService stateService, IUserService userService) : ILocationService
+    internal class LocationService(ILogger<LocationService> logger, PgContext pgContext, IUserService userService) : ILocationService
     {
         public async Task<LocationModel?> GetLocationAsync(long locationId, CancellationToken cancellationToken) =>
             await pgContext.Locations.FindAsync(locationId, cancellationToken);
@@ -17,7 +18,7 @@ namespace SockerLocatorBot.Services
             await pgContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<LocationModel?> CreateLocationAsync(Update update, CancellationToken cancellationToken)
+        public async Task<LocationModel?> CreateLocationAsync(Update update, LocationState locationState, CancellationToken cancellationToken)
         {
             var chatId = GetInfroFromUpdate.GetChatId(update);
             var user = await userService.GetUserAsync(update, cancellationToken);
@@ -28,20 +29,13 @@ namespace SockerLocatorBot.Services
                 return null;
             }
 
-            var state = stateService.GetState(chatId);
-            if (state is null)
-            {
-                logger.LogError("State not found for chatId: {ChatId}", chatId);
-                return null;
-            }
-
             var locationModel = new LocationModel
             {
-                CreatedBy = user,
-                UpdatedBy = user,
-                Location = state.Location,
-                SocketType = state.SocketType,
-                Description = state.Description
+                CreatedById = user.Id,
+                UpdatedById = user.Id,
+                Location = locationState.Location,
+                SocketType = locationState.SocketType,
+                Description = locationState.Description
             };
 
             try

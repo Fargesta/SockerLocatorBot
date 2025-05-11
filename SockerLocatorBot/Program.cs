@@ -40,6 +40,7 @@ builder.Services.AddScoped<ReceiverService>();
 builder.Services.AddScoped<IStateService, StateService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SharedLocationHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, NewOrFindHandler>());
