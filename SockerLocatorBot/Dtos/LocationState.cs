@@ -20,7 +20,7 @@ namespace SockerLocatorBot.Dtos
         public Point Location { get; set; } = default!;
         public string? Name { get; set; } = default!;
         public List<TGFile> Photos { get; set; } = new();
-        public string? SocketType { get; set; } = default!;
+        public string SocketType { get; set; } = "UNKN";
         public string? Description { get; set; } = default!;
         public LocationStateEnum State { get; set; } = LocationStateEnum.None;
     }
