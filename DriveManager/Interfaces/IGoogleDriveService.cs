@@ -7,7 +7,7 @@ namespace DriveManager.Interfaces
     {
         Task<ConcurrentBag<UploadFileData>> UploadImagesAsync(IEnumerable<Stream> imageStreams, string fileName, int maxParllelUploads, CancellationToken cancellationToken = default);
 
-        Task<ConcurrentBag<byte[]>> GetImagesAsync(IEnumerable<string> fileIds, int maxParallelDownloads, CancellationToken cancellationToken = default);
+        Task<ConcurrentBag<DownloadFileData>> GetImagesAsync(IEnumerable<string> fileIds, int maxParallelDownloads, CancellationToken cancellationToken = default);
 
         Task DeleteFilesAsync(IEnumerable<string> fileIds, int maxParralelDeletes, CancellationToken cancellationToken = default);
     }

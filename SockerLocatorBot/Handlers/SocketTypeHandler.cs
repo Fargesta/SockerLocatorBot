@@ -1,4 +1,5 @@
 ﻿using SockerLocatorBot.Dtos;
+using SockerLocatorBot.Helpers;
 using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -15,7 +16,7 @@ namespace SockerLocatorBot.Handlers
         {
             if (update.CallbackQuery is not null && update.CallbackQuery?.Message is not null)
             {
-                chatId = update.CallbackQuery.Message.Chat.Id;
+                chatId = GetInfroFromUpdate.GetChatId(update);
                 var state = stateService.GetState(chatId);
 
                 if (state is not null && state.State is LocationStateEnum.WaitingForType)
@@ -29,12 +30,12 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            if (locationState is null || update.CallbackQuery is null)
+            if (locationState is null)
             {
                 throw new ArgumentNullException(nameof(locationState), "State or CallbackQuery is null");
             }
 
-            logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
+            logger.LogInformation($"Handling callback query: {update.CallbackQuery!.Data}, Chat Id: {chatId}");
 
             var inlineMarkup = new InlineKeyboardMarkup(new[]
             {

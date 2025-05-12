@@ -9,7 +9,7 @@ namespace SockerLocatorBot.Interfaces
     {
         Task<LocationModel?> CreateLocationAsync(Update update, LocationState locationState, CancellationToken cancellationToken);
         Task DeleteLocationAsync(long locationId, CancellationToken cancellationToken);
-        Task<List<LocationModel>> FindLocations(Point point, int km, CancellationToken cancellationToken);
+        Task<List<LocationModel>> FindLocations(Point point, int km, int socketCount, CancellationToken cancellationToken);
         Task<LocationModel?> GetLocationAsync(long locationId, CancellationToken cancellationToken);
     }
 }

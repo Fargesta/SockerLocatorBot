@@ -53,7 +53,7 @@ namespace SockerLocatorBot.Handlers
                 logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
                 await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
 
-                var locationsFound = await locationService.FindLocations(locationState.Location, 100, cancellationToken);
+                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 3, cancellationToken);
                 if (locationsFound.Count == 0)
                 {
                     await botClient.SendMessage(chatId, "No sockets found nearby", cancellationToken: cancellationToken);
@@ -72,7 +72,16 @@ namespace SockerLocatorBot.Handlers
                         await Task.Delay(200, cancellationToken);
                         foreach (var image in loadImages)
                         {
-                            await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image)), caption: image., cancellationToken: cancellationToken);
+                            var caption = location.Images.FirstOrDefault(x => x.DriveFileId == image.FileId)?.Description;
+                            if(caption is not null)
+                            {
+                                await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image.Bytes)), caption: caption, cancellationToken: cancellationToken);
+                            }
+                            else
+                            {
+                                await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image.Bytes)), cancellationToken: cancellationToken);
+                            }
+                            logger.LogInformation($"Image sent: {image.FileId}, Chat Id: {chatId}");
                             await Task.Delay(200, cancellationToken);
                         }
                     }

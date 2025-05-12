@@ -77,9 +77,9 @@ namespace DriveManager.Services
             return ids;
         }
 
-        public async Task<ConcurrentBag<byte[]>> GetImagesAsync(IEnumerable<string> fileIds, int maxParallelDownloads = 4, CancellationToken cancellationToken = default)
+        public async Task<ConcurrentBag<DownloadFileData>> GetImagesAsync(IEnumerable<string> fileIds, int maxParallelDownloads = 4, CancellationToken cancellationToken = default)
         {
-            var result = new ConcurrentBag<byte[]>();
+            var result = new ConcurrentBag<DownloadFileData>();
 
             await Parallel.ForEachAsync(fileIds, new ParallelOptions
             {
@@ -100,7 +100,13 @@ namespace DriveManager.Services
 
                         if (progress.Status == DownloadStatus.Completed)
                         {
-                            result.Add(memoryStream.ToArray());
+                            var newDownload = new DownloadFileData
+                            {
+                                FileId = fileId,
+                                Bytes = memoryStream.ToArray(),
+                            };
+
+                            result.Add(newDownload);
                             break;
                         }
                         else

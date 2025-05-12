@@ -54,7 +54,7 @@ namespace SockerLocatorBot.Services
             }
         }
 
-        public async Task<List<LocationModel>> FindLocations(Point point, int km, CancellationToken cancellationToken)
+        public async Task<List<LocationModel>> FindLocations(Point point, int km, int socketCount, CancellationToken cancellationToken)
         {
             var radius = RadiusHelper.KmToDegrees(km);
 
@@ -62,7 +62,7 @@ namespace SockerLocatorBot.Services
                 .Include(x => x.Images)
                 .Where(l => l.Location.IsWithinDistance(point, radius))
                 .OrderBy(l => l.Location.Distance(point))
-                .Take(1)
+                .Take(socketCount)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
