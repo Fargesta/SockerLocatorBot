@@ -1,5 +1,7 @@
 ﻿using DbManager;
 using DbManager.Models;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using SockerLocatorBot.Dtos;
 using SockerLocatorBot.Helpers;
 using SockerLocatorBot.Interfaces;
@@ -50,6 +52,21 @@ namespace SockerLocatorBot.Services
                 logger.LogError(ex, "Error creating location");
                 throw;
             }
+        }
+
+        public async Task<List<LocationModel>> FindLocations(Point point, int km, int socketCount, CancellationToken cancellationToken)
+        {
+            var radius = RadiusHelper.KmToDegrees(km);
+
+            var locations = await pgContext.Locations
+                .Include(x => x.Images)
+                .Where(l => l.Location.IsWithinDistance(point, radius))
+                .OrderBy(l => l.Location.Distance(point))
+                .Take(socketCount)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return locations;
         }
     }
 }

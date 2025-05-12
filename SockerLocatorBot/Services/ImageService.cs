@@ -1,5 +1,6 @@
 ﻿using DbManager;
 using DbManager.Models;
+using DriveManager.Dtos;
 using DriveManager.Interfaces;
 using Microsoft.Extensions.Options;
 using SockerLocatorBot.Dtos;
@@ -71,6 +72,13 @@ namespace SockerLocatorBot.Services
                 logger.LogError(ex, "Error uploading file");
                 throw;
             }
+        }
+
+        public async Task<List<DownloadFileData>> DowloadImagesAsync(IList<ImageModel> images, CancellationToken cancellationToken)
+        {
+            var ids = images.Select(x => x.DriveFileId).ToList();
+            var downloads = await googleDrive.GetImagesAsync(ids, 4, cancellationToken);
+            return downloads.ToList();  
         }
     }
 }

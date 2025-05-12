@@ -1,28 +1,31 @@
 ﻿using SockerLocatorBot.Dtos;
+using SockerLocatorBot.Helpers;
 using SockerLocatorBot.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace SockerLocatorBot.Handlers
 {
-    public class NewOrFindHandler(ILogger<NewOrFindHandler> logger, IStateService stateService, ITelegramBotClient botClient) : IBotHandler
+    internal class NewOrFindHandler(ILogger<NewOrFindHandler> logger,
+        IStateService stateService,
+        ITelegramBotClient botClient,
+        ILocationService locationService,
+        IImageService imageService) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
 
         public bool CanHandle(Update update)
         {
-            if (update.CallbackQuery is not null && update.CallbackQuery?.Message is not null)
-            {
-                chatId = update.CallbackQuery.Message.Chat.Id;
-                var state = stateService.GetState(chatId);
+            chatId = GetInfroFromUpdate.GetChatId(update);
+            var state = stateService.GetState(chatId);
 
-                if(state is not null && state.State is LocationStateEnum.LocationShared)
-                {
-                    locationState = state;
-                    return true;
-                }
+            if(state is not null && state.State is LocationStateEnum.LocationShared)
+            {
+                locationState = state;
+                return true;
             }
+            
             return false;
         }
 
@@ -46,7 +49,44 @@ namespace SockerLocatorBot.Handlers
             {
                 locationState.State = LocationStateEnum.FindSocket;
                 stateService.SetState(chatId, locationState);
+
+                logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
                 await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
+
+                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 3, cancellationToken);
+                if (locationsFound.Count == 0)
+                {
+                    await botClient.SendMessage(chatId, "No sockets found nearby", cancellationToken: cancellationToken);
+                    logger.LogError($"No sockets found ChatId: {chatId}");
+                }
+                else
+                {
+                    foreach (var location in locationsFound)
+                    {
+                        await botClient.SendLocation(chatId, location.Location.Y, location.Location.X, cancellationToken: cancellationToken);
+
+                        if (!string.IsNullOrEmpty(location.Description))
+                            await botClient.SendMessage(chatId, location.Description, cancellationToken: cancellationToken);
+
+                        var loadImages = await imageService.DowloadImagesAsync(location.Images, cancellationToken);
+                        await Task.Delay(200, cancellationToken);
+                        foreach (var image in loadImages)
+                        {
+                            var caption = location.Images.FirstOrDefault(x => x.DriveFileId == image.FileId)?.Description;
+                            if(caption is not null)
+                            {
+                                await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image.Bytes)), caption: caption, cancellationToken: cancellationToken);
+                            }
+                            else
+                            {
+                                await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image.Bytes)), cancellationToken: cancellationToken);
+                            }
+                            logger.LogInformation($"Image sent: {image.FileId}, Chat Id: {chatId}");
+                            await Task.Delay(200, cancellationToken);
+                        }
+                    }
+                }
+                stateService.ClearState(chatId);
             }
             else
             {
