@@ -9,7 +9,8 @@ namespace SockerLocatorBot.Handlers
     internal class NewOrFindHandler(ILogger<NewOrFindHandler> logger,
         IStateService stateService,
         ITelegramBotClient botClient,
-        ILocationService locationService) : IBotHandler
+        ILocationService locationService,
+        IImageService imageService) : IBotHandler
     {
         private LocationState? locationState { get; set; } = null;
         private long chatId { get; set; }
@@ -63,6 +64,12 @@ namespace SockerLocatorBot.Handlers
                     foreach (var location in locationsFound)
                     {
                         await botClient.SendLocation(chatId, location.Location.Y, location.Location.X, cancellationToken: cancellationToken);
+
+                        foreach(var image in location.Images)
+                        {
+
+                        }
+
                         await Task.Delay(500, cancellationToken);
                     }
                 }

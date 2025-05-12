@@ -59,6 +59,7 @@ namespace SockerLocatorBot.Services
             var radius = RadiusHelper.KmToDegrees(km);
 
             var locations = await pgContext.Locations
+                .Include(x => x.Images)
                 .Where(l => l.Location.IsWithinDistance(point, radius))
                 .OrderBy(l => l.Location.Distance(point))
                 .Take(3)
