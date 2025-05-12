@@ -18,7 +18,6 @@ namespace SockerLocatorBot.Handlers
         public bool CanHandle(Update update)
         {
             if (update.CallbackQuery is not null &&
-                update.CallbackQuery?.Message is not null &&
                 update.CallbackQuery.Data is "SAVE")
             {
                 chatId = GetInfroFromUpdate.GetChatId(update);
