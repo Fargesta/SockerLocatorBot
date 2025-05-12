@@ -37,8 +37,9 @@ namespace SockerLocatorBot.Handlers
                 {
                     SRID = 4326
                 },
-                State = LocationStateEnum.LocationShared
+                State = LocationStateEnum.LocationShared,
             };
+            newState.MessageIds.Add(update.Message.MessageId);
             stateService.CreateState(update.Message.Chat.Id, newState);
         }
     }

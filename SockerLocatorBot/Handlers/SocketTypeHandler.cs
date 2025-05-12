@@ -54,6 +54,7 @@ namespace SockerLocatorBot.Handlers
             };
 
             locationState.State = LocationStateEnum.WaitingForDescription;
+            locationState.MessageIds.Add(update.CallbackQuery.Message!.MessageId);
             stateService.SetState(chatId, locationState);
         }
     }

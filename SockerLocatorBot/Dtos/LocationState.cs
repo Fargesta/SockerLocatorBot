@@ -24,5 +24,6 @@ namespace SockerLocatorBot.Dtos
         public string? Description { get; set; } = default;
         public LocationStateEnum State { get; set; } = LocationStateEnum.None;
         public string? ImageCaption { get; set; } = default;
+        public List<int> MessageIds { get; set; } = new();
     }
 }

@@ -55,6 +55,7 @@ namespace SockerLocatorBot.Handlers
             }
 
             locationState.State = LocationStateEnum.ReadyToSave;
+            locationState.MessageIds.Add(update.Message!.MessageId);
 
             var summary = $"Location: {locationState.Location}\n" +
                 $"Numer of image: {locationState.Photos.Count().ToString() }\n" +

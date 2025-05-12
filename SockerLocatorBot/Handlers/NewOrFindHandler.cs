@@ -32,12 +32,13 @@ namespace SockerLocatorBot.Handlers
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
 
-            if (locationState is null || locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null)
+            if (locationState is null || locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null || update.CallbackQuery.Message is null)
             {
                 throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null or wrong state");
             }
 
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
+            locationState.MessageIds.Add(update.CallbackQuery.Message.MessageId);
 
             if (update.CallbackQuery.Data == "ADDNEW")
             {

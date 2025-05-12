@@ -29,10 +29,13 @@ namespace SockerLocatorBot.Handlers
 
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
-            if (update.CallbackQuery is null)
+            if (update.CallbackQuery is null || locationState is null)
             {
                 throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null");
             }
+            logger.LogInformation($"Handling cancel. Chat Id {chatId}");
+            await botClient.DeleteMessages(chatId, locationState.MessageIds, cancellationToken);
+            stateService.ClearState(chatId);
         }
     }
 }
