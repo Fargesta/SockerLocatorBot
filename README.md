@@ -1,6 +1,6 @@
 # ⚡ SockerLocatorBot
 
-**Telegram Bot to Share and Find Free Electrical Socket Locations (or any other location) — With Location, Image, and Map Support**
+**Telegram Bot to Share and Find Free Electrical Socket (or any other) Locations — With Location, Image, and Map Support**
 
 SockerLocatorBot is a geolocation-aware Telegram bot that helps users **add** or **find nearby** locations. Users can contribute by sharing GPS coordinates and uploading an image, which is then stored on **Google Drive**. All location data is stored in a **PostgreSQL database with PostGIS**, enabling powerful spatial queries.
 
