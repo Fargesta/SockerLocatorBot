@@ -72,5 +72,12 @@ namespace SockerLocatorBot.Services
                 throw;
             }
         }
+
+        public async Task<List<byte[]>> DowloadImagesAsync(IList<ImageModel> images, CancellationToken cancellationToken)
+        {
+            var ids = images.Select(x => x.DriveFileId).ToList();
+            var downloads = await googleDrive.GetImagesAsync(ids, 4, cancellationToken);
+            return downloads.ToList();  
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace SockerLocatorBot.Services
                 .Include(x => x.Images)
                 .Where(l => l.Location.IsWithinDistance(point, radius))
                 .OrderBy(l => l.Location.Distance(point))
-                .Take(3)
+                .Take(1)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 

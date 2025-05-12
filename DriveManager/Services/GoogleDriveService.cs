@@ -72,7 +72,7 @@ namespace DriveManager.Services
                         throw new Exception($"Error uploading file after {attempt} attempts: {ex.Message}", ex);
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return ids;
         }
@@ -118,7 +118,7 @@ namespace DriveManager.Services
                         throw new Exception($"Error downloading file '{fileId}' after {attempt} attempts: {ex.Message}", ex);
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return result;
         }
@@ -152,7 +152,7 @@ namespace DriveManager.Services
                         throw new Exception($"Error deleting file '{fileId}' after {attempt} attempts: {ex.Message}", ex);
                     }
                 }
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

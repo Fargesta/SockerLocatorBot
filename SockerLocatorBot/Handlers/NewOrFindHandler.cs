@@ -65,12 +65,16 @@ namespace SockerLocatorBot.Handlers
                     {
                         await botClient.SendLocation(chatId, location.Location.Y, location.Location.X, cancellationToken: cancellationToken);
 
-                        foreach(var image in location.Images)
+                        if (!string.IsNullOrEmpty(location.Description))
+                            await botClient.SendMessage(chatId, location.Description, cancellationToken: cancellationToken);
+
+                        var loadImages = await imageService.DowloadImagesAsync(location.Images, cancellationToken);
+                        await Task.Delay(200, cancellationToken);
+                        foreach (var image in loadImages)
                         {
-
+                            await botClient.SendPhoto(chatId, new InputFileStream(new MemoryStream(image)), caption: image., cancellationToken: cancellationToken);
+                            await Task.Delay(200, cancellationToken);
                         }
-
-                        await Task.Delay(500, cancellationToken);
                     }
                 }
                 stateService.ClearState(chatId);
