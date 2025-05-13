@@ -20,7 +20,7 @@ namespace SockerLocatorBot.Handlers
             chatId = GetInfroFromUpdate.GetChatId(update);
             var state = stateService.GetState(chatId);
 
-            if(state is not null && state.State is LocationStateEnum.LocationShared)
+            if(state is not null && state.State is LocationStateEnum.LocationShared && (update.CallbackQuery?.Data is "ADDNEW" || update.CallbackQuery?.Data is "FINDNEAR"))
             {
                 locationState = state;
                 return true;
@@ -32,20 +32,20 @@ namespace SockerLocatorBot.Handlers
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
 
-            if (locationState is null || locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null)
+            if (locationState is null || locationState.State is not LocationStateEnum.LocationShared || update.CallbackQuery is null || update.CallbackQuery.Message is null)
             {
                 throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null or wrong state");
             }
 
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
 
-            if (update.CallbackQuery.Data == "ADDNEW")
+            if (update.CallbackQuery.Data is "ADDNEW")
             {
                 locationState.State = LocationStateEnum.WaitingForImage;
                 stateService.SetState(chatId, locationState);
                 await botClient.SendMessage(chatId, "Please send me a photo of the socket", cancellationToken: cancellationToken);
             }
-            else if (update.CallbackQuery.Data == "FINDNEAR")
+            else if (update.CallbackQuery.Data is "FINDNEAR")
             {
                 locationState.State = LocationStateEnum.FindSocket;
                 stateService.SetState(chatId, locationState);
@@ -53,7 +53,7 @@ namespace SockerLocatorBot.Handlers
                 logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
                 await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
 
-                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 3, cancellationToken);
+                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 1, cancellationToken);
                 if (locationsFound.Count == 0)
                 {
                     await botClient.SendMessage(chatId, "No sockets found nearby", cancellationToken: cancellationToken);
