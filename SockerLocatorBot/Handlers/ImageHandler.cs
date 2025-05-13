@@ -62,7 +62,6 @@ namespace SockerLocatorBot.Handlers
             locationState.Photos.Add(file);
             locationState.ImageCaption = update.Message.Caption;
             locationState.State = LocationStateEnum.WaitingForType;
-            locationState.MessageIds.Add(update.Message.MessageId);
             stateService.SetState(chatId, locationState);
         }
     }

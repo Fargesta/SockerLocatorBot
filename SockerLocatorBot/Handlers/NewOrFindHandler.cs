@@ -38,7 +38,6 @@ namespace SockerLocatorBot.Handlers
             }
 
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
-            locationState.MessageIds.Add(update.CallbackQuery.Message.MessageId);
 
             if (update.CallbackQuery.Data is "ADDNEW")
             {
@@ -54,7 +53,7 @@ namespace SockerLocatorBot.Handlers
                 logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
                 await botClient.SendMessage(chatId, "Searching closest socket(s)", cancellationToken: cancellationToken);
 
-                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 3, cancellationToken);
+                var locationsFound = await locationService.FindLocations(locationState.Location, 10, 1, cancellationToken);
                 if (locationsFound.Count == 0)
                 {
                     await botClient.SendMessage(chatId, "No sockets found nearby", cancellationToken: cancellationToken);

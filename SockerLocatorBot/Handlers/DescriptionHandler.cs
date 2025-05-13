@@ -13,7 +13,9 @@ namespace SockerLocatorBot.Handlers
 
         public bool CanHandle(Update update)
         {
-            if (update.CallbackQuery is not null && update.CallbackQuery.Message is not null)
+            if (update.CallbackQuery is not null &&
+                update.CallbackQuery.Message is not null &&
+                update.CallbackQuery.Data is not "CANCEL")
             {
                 chatId = update.CallbackQuery.Message.Chat.Id;
                 var state = stateService.GetState(chatId);
@@ -55,7 +57,6 @@ namespace SockerLocatorBot.Handlers
             }
 
             locationState.State = LocationStateEnum.ReadyToSave;
-            locationState.MessageIds.Add(update.Message!.MessageId);
 
             var summary = $"Location: {locationState.Location}\n" +
                 $"Numer of image: {locationState.Photos.Count().ToString() }\n" +
