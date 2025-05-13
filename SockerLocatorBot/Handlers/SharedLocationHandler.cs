@@ -29,7 +29,7 @@ namespace SockerLocatorBot.Handlers
                 .AddNewRow()
                     .AddButton(InlineKeyboardButton.WithCallbackData("Cancel", "CANCEL"));
 
-            await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
+            var msg = await botClient.SendMessage(update.Message.Chat, "Got your location! What next?", replyMarkup: inlineMarkup, cancellationToken: cancellationToken);
 
             var newState = new LocationState
             {
@@ -40,6 +40,7 @@ namespace SockerLocatorBot.Handlers
                 State = LocationStateEnum.LocationShared,
             };
             newState.MessageIds.Add(update.Message.MessageId);
+            newState.MessageIds.Add(msg.MessageId);
             stateService.CreateState(update.Message.Chat.Id, newState);
         }
     }

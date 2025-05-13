@@ -20,7 +20,7 @@ namespace SockerLocatorBot.Handlers
             chatId = GetInfroFromUpdate.GetChatId(update);
             var state = stateService.GetState(chatId);
 
-            if(state is not null && state.State is LocationStateEnum.LocationShared)
+            if(state is not null && state.State is LocationStateEnum.LocationShared && (update.CallbackQuery?.Data is "ADDNEW" || update.CallbackQuery?.Data is "FINDNEAR"))
             {
                 locationState = state;
                 return true;
@@ -40,13 +40,13 @@ namespace SockerLocatorBot.Handlers
             logger.LogInformation($"Handling callback query: {update.CallbackQuery.Data}, Chat Id: {chatId}");
             locationState.MessageIds.Add(update.CallbackQuery.Message.MessageId);
 
-            if (update.CallbackQuery.Data == "ADDNEW")
+            if (update.CallbackQuery.Data is "ADDNEW")
             {
                 locationState.State = LocationStateEnum.WaitingForImage;
                 stateService.SetState(chatId, locationState);
                 await botClient.SendMessage(chatId, "Please send me a photo of the socket", cancellationToken: cancellationToken);
             }
-            else if (update.CallbackQuery.Data == "FINDNEAR")
+            else if (update.CallbackQuery.Data is "FINDNEAR")
             {
                 locationState.State = LocationStateEnum.FindSocket;
                 stateService.SetState(chatId, locationState);

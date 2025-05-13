@@ -49,6 +49,7 @@ builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SocketTy
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, DescriptionHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, SaveLocationHandler>());
 builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, StartHandler>());
+builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IBotHandler, CancelHandler>());
 
 builder.Services.AddHostedService<PollingService>();
 

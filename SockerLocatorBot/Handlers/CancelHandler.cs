@@ -21,6 +21,7 @@ namespace SockerLocatorBot.Handlers
 
                 if (state is not null)
                 {
+                    locationState = state;
                     return true;
                 }
             }
@@ -34,7 +35,8 @@ namespace SockerLocatorBot.Handlers
                 throw new ArgumentNullException(nameof(locationState), "CallbackQuery is null");
             }
             logger.LogInformation($"Handling cancel. Chat Id {chatId}");
-            await botClient.DeleteMessages(chatId, locationState.MessageIds, cancellationToken);
+            await botClient.SendMessage(chatId, "Action cancelled", cancellationToken: cancellationToken);
+            //await botClient.DeleteMessages(chatId, locationState.MessageIds, cancellationToken);
             stateService.ClearState(chatId);
         }
     }
